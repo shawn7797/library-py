@@ -4,7 +4,7 @@ from . models import Book, Publisher
 import json
 
 def index(request):
-    return HttpResponse("Hello World")
+    return render(request, "index.html")
 
 def book_by_id(request, book_id):
     try:
