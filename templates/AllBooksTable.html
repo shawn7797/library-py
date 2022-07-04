@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>All Books</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    {% block content %}
+        Welcome to Shawn's Library
+        <br>
+        <br>
+        These are the books in stock currently:
+        <br>
+        <br>
+    
+        <table>
+            <tr>
+                <th>Book Title</th>
+                <th>Price</th>
+                <th>Publisher Name</th>
+                <th>Date of Publishing</th>
+            </tr>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.price }}</td>
+                    <td>{{ book.publisher }}</td>
+                    <td>{{ book.pub_date }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <br>
+        <a href='http://{{ request.get_host }}'>Home</a>
+        <br>
+        <a href='http://{{ request.get_host }}/app/get_book'>Search Book by Title</a>
+        <br>
+        <script>
+            function goHome(request) {
+                window.location.href = 'http://{{ request.get_host }}'
+            }
+            function searchBookByTitle() {
+                window.location.href = 'http://{{ request.get_host }}/app/get_book'
+            }
+        </script>
+    {% endblock %}
+</body>
+</html>

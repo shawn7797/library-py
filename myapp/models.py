@@ -7,6 +7,10 @@ class Book(models.Model):
     price = models.FloatField(blank=True, null=True)
     pub_date = models.DateTimeField('date published')
     publisher = models.ForeignKey("Publisher", on_delete=models.CASCADE)
+    def __str__(self):
+       return self.title
+    def __unicode__(self):
+       return self.title
 
 
 class Publisher(models.Model):

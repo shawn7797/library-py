@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    {% block content %}
+    Welcome to Shawn's Library
+    <br>
+    <br>
+    Search book by name<br>
+    <form id="myForm" action="post_book_by_title" method="post">
+    Enter book name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="book_title" id="book_title_input" required/>
+    <br>
+    <br>
+    <input type="submit" />&nbsp;<button onclick="history.back()">↢ Go Back</button>
+    
+    {% csrf_token %}
+    </form>
+    <br>
+    <br>
+{% endblock %}
+</body>
+</html>

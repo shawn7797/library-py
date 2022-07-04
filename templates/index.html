@@ -5,15 +5,19 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Welcome to Shawn's Library</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='main.js'></script>
 </head>
 <body>
     Welcome to Shawn's Library
-    <button onClick="redirect()">Click here to get all books</button>
+    <br>
+    <br>
+    <button onClick="getAllBooks()">Click here to view all books</button> &nbsp;
+    <button onClick="getBookByName()">Click here to search book by title</button>
     <script>
-        function redirect() {
-            window.location.href = "http://localhost:3001/app/get_books"
+        function getAllBooks() {
+            window.location.href = 'http://{{ request.get_host }}/app/get_books'
+        }
+        function getBookByName() {
+            window.location.href = 'http://{{ request.get_host }}/app/get_book'
         }
     </script>
 </body>
