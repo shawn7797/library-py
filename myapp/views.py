@@ -1,7 +1,10 @@
+from dataclasses import dataclass
 from django.shortcuts import render
 from django.http import HttpResponse
 from . models import Book, Publisher
 import json
+from django.views.decorators.csrf import csrf_exempt
+from myapp.forms import BookForm, PublisherForm
 
 def index(request):
     return render(request, "index.html")
@@ -57,3 +60,51 @@ def get_publishers(request):
     for publisher in publishers:
         publishers_list.append({ "name": publisher.publisher_name, "location": publisher.location })
     return HttpResponse( json.dumps( publishers_list ) )
+
+@csrf_exempt
+def add_book(request):
+    form = BookForm(data=request.POST)
+    if form.is_valid():
+        obj = Book()
+        obj.title = form.cleaned_data['title']
+        obj.price = form.cleaned_data['price']
+        obj.pub_date = form.cleaned_data['pub_date']
+
+        publisher = Publisher.objects.get(pk=form.cleaned_data['publisher'])
+        obj.publisher = publisher
+        try:
+            obj.save()
+            return HttpResponse( json.dumps({ 'status': 'success' }) )
+        except:
+            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while adding book!' }) )
+    else:
+        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Form data is not valid!' }) )
+
+@csrf_exempt
+def add_publisher(request):
+    form = PublisherForm(data=request.POST)
+    if form.is_valid():
+        obj = Publisher()
+        obj.publisher_name = form.cleaned_data['publisher_name']
+        obj.location = form.cleaned_data['location']
+
+        try:
+            obj.save()
+            return HttpResponse( json.dumps({ 'status': 'success' }) )
+        except:
+            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while adding publisher!' }) )
+    else:
+        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Form data is not valid!' }) )
+
+def get_publisher_books(request):
+    if request.GET.get('publisher_id'):
+        publisher_id = int(request.GET.get('publisher_id'))
+        try:
+            filtered_books = Book.objects.filter(publisher=publisher_id)
+            data = []
+            for book in filtered_books:
+                data.append({ "title": book.title, 'price': book.price, "pub_date": book.pub_date.strftime("%d/%m/%Y"), "publisher": book.publisher.publisher_name })
+            print('data: ', data)
+            return HttpResponse( json.dumps({ 'books': data }) )
+        except:
+            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while querying database!' }) )
