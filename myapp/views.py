@@ -35,7 +35,6 @@ def post_book_by_title(request):
 
     try:
         book = Book.objects.get(title__icontains=searched_title)
-        print('book = Book.objects.get(name__icontains=searched_title): ', Book.objects.get(title__icontains=searched_title))
         return render(request, "BookByTitleResult.html", { "status": "Success!", "result": f'Book {book.title} was published by {book.publisher.publisher_name} on {book.pub_date.strftime("%d/%m/%Y %H:%M:%S")}.' })
     except Book.DoesNotExist:
         return render(request, "BookByTitleResult.html", { "status": "Error!", "result": f'No book found with name {searched_title}' })
@@ -104,7 +103,13 @@ def get_publisher_books(request):
             data = []
             for book in filtered_books:
                 data.append({ "title": book.title, 'price': book.price, "pub_date": book.pub_date.strftime("%d/%m/%Y"), "publisher": book.publisher.publisher_name })
-            print('data: ', data)
             return HttpResponse( json.dumps({ 'books': data }) )
         except:
             return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while querying database!' }) )
+
+def add_book_view(request):
+    publishers = Publisher.objects.all();
+    return render(request, 'AddBook.html', { 'publishers': publishers } )
+
+def add_publisher_view(request):
+    return render(request, 'AddPublisher.html' )

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    {% block content %}
+        <h1>Welcome to Shawn's Library</h1>
+        <h2>Add Book</h2>
+        <form action="add_book" method="post">
+            Enter book title:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="title" id="title_input" required/>
+            <br>
+            <br>
+            Enter book price:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="number" name="price" id="price_input" required/>
+            <br>
+            <br>
+            Select publish date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="datetime-local" name="pub_date" id="pub_date_input" required/>
+            <br>
+            <br>
+            Select publisher:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select name="publisher" id="publisher_input" required>
+                    {% for publisher in publishers %}
+                        <option value={{ publisher.pk }}>{{ publisher.publisher_name }}</option>
+                    {% endfor %}
+                </select>
+        <br>
+        <br>
+        <input type="submit" />&nbsp;<button onclick="history.back()">↢ Go Back</button>
+        {% csrf_token %}
+        </form>
+        <br>
+        <button onclick='http://{{ request.get_host }}/app/get_books'>View All Books</button>
+        <br>
+        <br>
+    {% endblock %}
+</body>
+</html>
