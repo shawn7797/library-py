@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>All Books</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    {% block content %}
+        Welcome to Shawn's Library
+        <br>
+        <br>
+        List of publishers:
+        <br>
+        <br>
+    
+        <table>
+            <tr>
+                <th>Publisher Name</th>
+                <th>Location</th>
+            </tr>
+            {% for publisher in publishers %}
+                <tr>
+                    <td>{{ publisher.publisher_name }}</td>
+                    <td>{{ publisher.location }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <br>
+        <button onclick='goHome()'>Home</button>
+        <br>
+        <script>
+            function goHome(request) {
+                window.location.href = 'http://{{ request.get_host }}'
+            }
+        </script>
+    {% endblock %}
+</body>
+</html>

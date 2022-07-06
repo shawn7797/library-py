@@ -11,17 +11,22 @@
 <body>
     {% block content %}
         <h1>Welcome to Shawn's Library</h1>
-        <h2>Add Publisher</h2>
-        <form action="add_publisher" method="post">
-            Enter publisher name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="publisher_name" id="publisher_input" required/>
-            <br>
-            <br>
-            Enter location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="location" id="location_input" required/>
+        <h2>Delete Publisher</h2>
+        <form action="delete_publisher" method="post">
+            Select book:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select name="publisher_id" id="publisher_id_input" required>
+                    {% for publisher in publishers %}
+                        <option value={{ publisher.pk }}>{{ publisher.publisher_name }}</option>
+                    {% endfor %}
+                </select>
         <br>
         <br>
-        <input type="submit" />&nbsp;<button onclick="history.back()">↢ Go Back</button>
+        <input type="submit" value="Delete Publisher" />&nbsp;
         {% csrf_token %}
         </form>
+        <br>
+        <button onclick="history.back()">↢ Go Back</button>
+        <br>
         <br>
         <button onclick='viewAllPublishers()'>View All Publishers</button>
         <script>

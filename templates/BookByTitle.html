@@ -13,9 +13,9 @@
     Welcome to Shawn's Library
     <br>
     <br>
-    Search book by name<br>
+    Search book by title<br>
     <form id="myForm" action="post_book_by_title" method="post">
-    Enter book name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="book_title" id="book_title_input" required/>
+    Enter book title:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="book_title" id="book_title_input" required/>
     <br>
     <br>
     <input type="submit" />&nbsp;<button onclick="history.back()">↢ Go Back</button>
@@ -23,7 +23,12 @@
     {% csrf_token %}
     </form>
     <br>
-    <br>
+    <button onclick='viewBooks()'>View All Books</button>
+    <script>
+        function viewBooks() {
+            window.location.href = 'http://{{ request.get_host }}/app/get_books_view';
+        }
+    </script>
 {% endblock %}
 </body>
 </html>

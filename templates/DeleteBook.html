@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    {% block content %}
+        <h1>Welcome to Shawn's Library</h1>
+        <h2>Delete Book</h2>
+        <form action="delete_book" method="post">
+            Select book:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select name="book_id" id="book_id_input" required>
+                    {% for book in books %}
+                        <option value={{ book.pk }}>{{ book.title }}</option>
+                    {% endfor %}
+                </select>
+        <br>
+        <br>
+        <input type="submit" value="Delete Book" />&nbsp;
+        {% csrf_token %}
+        </form>
+        <br>
+        <button onclick="history.back()">↢ Go Back</button>
+        <br>
+        <br>
+        <button onclick='viewBooks()'>View All Books</button>
+        <br>
+        <br>
+        <script>
+            function viewBooks() {
+                window.location.href = 'http://{{ request.get_host }}/app/get_books_view';
+            }
+        </script>
+    {% endblock %}
+</body>
+</html>

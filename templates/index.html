@@ -7,17 +7,37 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
 <body>
-    Welcome to Shawn's Library
+    <h1>Welcome to Shawn's Library</h1>
+    <button onClick="getAllBooks()">View all books</button>&nbsp;
+    <button onClick="addBook()">Add a Book</button>&nbsp;
+    <button onClick="getBookByName()">Search book by title</button>&nbsp;
+    <button onClick="deleteBook()">Delete a book</button>&nbsp;
     <br>
     <br>
-    <button onClick="getAllBooks()">Click here to view all books</button> &nbsp;
-    <button onClick="getBookByName()">Click here to search book by title</button>
+    <button onClick="viewAllPublishers()">View all publishers</button>&nbsp;
+    <button onClick="addPublisher()">Add a Publisher</button>&nbsp;
+    <button onClick="deletePublisher()">Delete a publisher</button>&nbsp;
     <script>
         function getAllBooks() {
-            window.location.href = 'http://{{ request.get_host }}/app/get_books'
+            window.location.href = 'http://{{ request.get_host }}/app/get_books_view'
+        }
+        function addBook() {
+            window.location.href = 'http://{{ request.get_host }}/app/add_book_view'
         }
         function getBookByName() {
             window.location.href = 'http://{{ request.get_host }}/app/get_book'
+        }
+        function deleteBook() {
+            window.location.href = 'http://{{ request.get_host }}/app/delete_book_view'
+        }
+        function viewAllPublishers() {
+            window.location.href = 'http://{{ request.get_host }}/app/get_publishers_view'
+        }
+        function addPublisher() {
+            window.location.href = 'http://{{ request.get_host }}/app/add_publisher_view'
+        }
+        function deletePublisher() {
+            window.location.href = 'http://{{ request.get_host }}/app/delete_publisher_view'
         }
     </script>
 </body>

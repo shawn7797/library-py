@@ -20,4 +20,8 @@ urlpatterns = [
     path("update_publisher", views.update_publisher, name="update_publisher"),
     path("delete_book", views.delete_book, name="delete_book"),
     path("delete_publisher", views.delete_publisher, name="delete_publisher"),
+    path("delete_book_view", views.delete_book_view, name="delete_book_view"),
+    path("get_books_view", views.get_books_view, name="get_books_view"),
+    path("get_publishers_view", views.get_publishers_view, name="get_publishers_view"),
+    path("delete_publisher_view", views.delete_publisher_view, name="delete_publisher_view"),
 ]

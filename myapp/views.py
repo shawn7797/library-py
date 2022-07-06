@@ -44,10 +44,23 @@ def post_book_by_title(request):
 def get_books(request):
     try:
         books = Book.objects.all()
+        data = []
+        for book in books:
+            data.append({ "title": book.title, 'price': book.price, "pub_date": book.pub_date.strftime("%d/%m/%Y"), "publisher": book.publisher.publisher_name })
+        return HttpResponse(json.dumps({ 'books': data }))
+    except Book.DoesNotExist:
+        return HttpResponse(json.dumps({ "status": "success", "message": "No books available! Please add a new book and try again."}))
+
+def get_books_view(request):
+    try:
+        books = Book.objects.all()
+        return render(request, "AllBooksTable.html", { 'books': books })
     except Book.DoesNotExist:
         return HttpResponse({ "status": "Error", "message": "No books available! Please add a new book and try again."})
-    books = Book.objects.all()
-    return render(request, "AllBooksTable.html", { 'books': books })
+
+def get_publishers_view(request):
+    publishers = Publisher.objects.all()
+    return render(request, 'AllPublishersTable.html', { 'publishers': publishers })
 
 def get_publishers(request):
     try:
@@ -169,3 +182,12 @@ def delete_publisher(request):
         return HttpResponse(json.dumps({ "status": "error", "message": "Publisher does not exist!"}))
     except:
         return HttpResponse(json.dumps({ 'status': 'error', 'message': 'Error occurred while deleting publisher!' }) )
+
+def delete_book_view(request):
+    books = Book.objects.all()
+    return render(request, 'DeleteBook.html', { 'books': books })
+
+def delete_publisher_view(request):
+    publishers = Publisher.objects.all()
+    return render(request, 'DeletePublisher.html', { 'publishers': publishers })
+
