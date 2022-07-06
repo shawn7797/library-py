@@ -113,3 +113,37 @@ def add_book_view(request):
 
 def add_publisher_view(request):
     return render(request, 'AddPublisher.html' )
+
+@csrf_exempt
+def update_book(request):
+    obj = Book.objects.get(pk=request.POST.get('book_id'))
+    if request.POST.get('title') is not None:
+        obj.title = request.POST.get('title')
+    if request.POST.get('price') is not None:
+        obj.price = request.POST.get('price')
+    if request.POST.get('pub_date') is not None:
+        obj.pub_date = request.POST.get('pub_date')
+    if request.POST.get('publisher') is not None:
+        publisher = Publisher.objects.get(pk=request.POST.get('publisher'))
+        obj.publisher = publisher
+
+    try:
+        obj.save()
+        return HttpResponse( json.dumps({ 'status': 'success' }) )
+    except:
+        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while updating book!' }) )
+
+
+@csrf_exempt
+def update_publisher(request):
+    obj = Publisher.objects.get(pk=request.POST.get('publisher_id'))
+    if request.POST.get('publisher_name') is not None:
+        obj.publisher_name = request.POST.get('publisher_name')
+    if request.POST.get('location') is not None:
+        obj.location = request.POST.get('location')
+
+    try:
+        obj.save()
+        return HttpResponse( json.dumps({ 'status': 'success' }) )
+    except:
+        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while updating publisher!' }) )

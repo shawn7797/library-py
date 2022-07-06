@@ -15,5 +15,7 @@ urlpatterns = [
     path("add_book_view", views.add_book_view, name="add_book_view"),
     path("add_publisher", views.add_publisher, name="add_publisher"),
     path("add_publisher_view", views.add_publisher_view, name="add_publisher_view"),
-    path("get_publisher_books", views.get_publisher_books, name="get_publisher_books")
+    path("get_publisher_books", views.get_publisher_books, name="get_publisher_books"),
+    path("update_book", views.update_book, name="update_book"),
+    path("update_publisher", views.update_publisher, name="update_publisher"),
 ]
