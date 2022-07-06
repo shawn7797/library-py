@@ -147,3 +147,25 @@ def update_publisher(request):
         return HttpResponse( json.dumps({ 'status': 'success' }) )
     except:
         return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while updating publisher!' }) )
+
+@csrf_exempt
+def delete_book(request):
+    try:
+        obj = Book.objects.get(pk=request.POST.get('book_id'))
+        obj.delete()
+        return HttpResponse( json.dumps({ 'status': 'success' }) )
+    except Book.DoesNotExist:
+        return HttpResponse(json.dumps({ "status": "error", "message": "Book does not exist!"}))
+    except:
+        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while deleting book!' }) )
+
+@csrf_exempt
+def delete_publisher(request):
+    try:
+        obj = Publisher.objects.get(pk=request.POST.get('publisher_id'))
+        obj.delete()
+        return HttpResponse(json.dumps({ 'status': 'success' }) )
+    except Publisher.DoesNotExist:
+        return HttpResponse(json.dumps({ "status": "error", "message": "Publisher does not exist!"}))
+    except:
+        return HttpResponse(json.dumps({ 'status': 'error', 'message': 'Error occurred while deleting publisher!' }) )
