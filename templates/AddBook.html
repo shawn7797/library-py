@@ -34,9 +34,12 @@
         {% csrf_token %}
         </form>
         <br>
-        <button onclick='http://{{ request.get_host }}/app/get_books'>View All Books</button>
-        <br>
-        <br>
+        <button onclick='viewAllBooks()'>View All Books</button>
+        <script>
+            function viewAllBooks() {
+                window.location.href = 'http://{{ request.get_host }}/app/get_books_view';
+            }
+        </script>
     {% endblock %}
 </body>
 </html>

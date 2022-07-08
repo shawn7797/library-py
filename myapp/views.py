@@ -6,6 +6,10 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from myapp.forms import BookForm, PublisherForm
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from myapp.serializers import BookSerializer, PublisherSerializer
+
 def index(request):
     return render(request, "index.html")
 
@@ -15,17 +19,35 @@ def get_book(request):
     except:
         return index
 
+@api_view(['GET'])
 def get_book_by_id(request, book_id):
     if book_id:
         try:
             book = Book.objects.get(pk=book_id)
             # return HttpResponse(f'Book {book.title} was published by {book.publisher.publisher_name} on {book.pub_date.strftime("%d/%m/%Y %H:%M:%S")}.')
-            data = { "title": book.title, "pub_date": book.pub_date.strftime("%d/%m/%Y %H:%M:%S"), "publisher": book.publisher.publisher_name }
-            return HttpResponse(json.dumps(data))
+            # data = { "title": book.title, "pub_date": book.pub_date.strftime("%d/%m/%Y %H:%M:%S"), "publisher": book.publisher.publisher_name }
+            serializer = BookSerializer(book, many=False)
+            return Response(serializer.data)
         except Book.DoesNotExist:
-            return HttpResponse(json.dumps({ 'status': 'success', 'result': {} }))
+            return Response({})
         except:
-            return HttpResponse(json.dumps({ 'status': 'error', 'message': 'Error occurred while querying database!' }))
+            return Response({ 'status': 'error', 'message': 'Error occurred while querying database!' })
+
+@api_view(['POST'])
+def search_book_by_title(request):
+    searched_title = str(request.POST["title"])
+    print('request.POST["title"]: ', request.POST)
+
+    if searched_title is None or searched_title == '':
+        return Response({ "status": "error", "result": 'Title not defined' })
+    
+    try:
+        book = Book.objects.get(title__icontains=searched_title)
+        return Response({ "status": "success", "result": f'Book {book.title} was published by {book.publisher.publisher_name} on {book.pub_date.strftime("%d/%m/%Y %H:%M:%S")}.' })
+    except Book.DoesNotExist:
+        return Response({ "status": "error", "result": f'No book found with name {searched_title}' })
+    except:
+        return Response({ "status": "error", "result": "Error occurred!" })
 
 def post_book_by_title(request):
     if "book_title" not in request.POST:
@@ -35,44 +57,44 @@ def post_book_by_title(request):
 
     try:
         book = Book.objects.get(title__icontains=searched_title)
-        return render(request, "BookByTitleResult.html", { "status": "Success!", "result": f'Book {book.title} was published by {book.publisher.publisher_name} on {book.pub_date.strftime("%d/%m/%Y %H:%M:%S")}.' })
+        return render(request, "BookByTitleResult.html", { "status": "success", "result": f'Book {book.title} was published by {book.publisher.publisher_name} on {book.pub_date.strftime("%d/%m/%Y %H:%M:%S")}.' })
     except Book.DoesNotExist:
         return render(request, "BookByTitleResult.html", { "status": "Error!", "result": f'No book found with name {searched_title}' })
     except:
         return render(request, "BookByTitleResult.html", { "status": "Error!", "result": "Error occurred!" })
 
+@api_view(['GET'])
 def get_books(request):
     try:
         books = Book.objects.all()
-        data = []
-        for book in books:
-            data.append({ "title": book.title, 'price': book.price, "pub_date": book.pub_date.strftime("%d/%m/%Y"), "publisher": book.publisher.publisher_name })
-        return HttpResponse(json.dumps({ 'books': data }))
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
     except Book.DoesNotExist:
-        return HttpResponse(json.dumps({ "status": "success", "message": "No books available! Please add a new book and try again."}))
+        return Response(({ "status": "success", "message": "No books available! Please add a new book and try again."}))
 
+@api_view(['GET'])
 def get_books_view(request):
     try:
         books = Book.objects.all()
         return render(request, "AllBooksTable.html", { 'books': books })
     except Book.DoesNotExist:
-        return HttpResponse({ "status": "Error", "message": "No books available! Please add a new book and try again."})
+        return Response({ "status": "Error", "message": "No books available! Please add a new book and try again."})
 
+@api_view(['GET'])
 def get_publishers_view(request):
     publishers = Publisher.objects.all()
     return render(request, 'AllPublishersTable.html', { 'publishers': publishers })
 
+@api_view(['GET'])
 def get_publishers(request):
     try:
-        books = Publisher.objects.all()
+        publishers = Publisher.objects.all()
+        serializer = PublisherSerializer(publishers, many=True)
+        return Response(serializer.data)
     except Publisher.DoesNotExist:
-        return HttpResponse({ "status": "Error", "message": "No Publishers found!"})
-    publishers = Publisher.objects.all()
-    publishers_list = []
-    for publisher in publishers:
-        publishers_list.append({ "name": publisher.publisher_name, "location": publisher.location })
-    return HttpResponse( json.dumps( publishers_list ) )
+        return Response({ "status": "error", "message": "No Publishers found!"})
 
+@api_view(['POST'])
 @csrf_exempt
 def add_book(request):
     form = BookForm(data=request.POST)
@@ -86,12 +108,13 @@ def add_book(request):
         obj.publisher = publisher
         try:
             obj.save()
-            return HttpResponse( json.dumps({ 'status': 'success' }) )
+            return Response(({ 'status': 'success' }) )
         except:
-            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while adding book!' }) )
+            return Response(({ 'status': 'error', 'message': 'Error occurred while adding book!' }) )
     else:
-        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Form data is not valid!' }) )
+        return Response(({ 'status': 'error', 'message': 'Form data is not valid!' }) )
 
+@api_view(['POST'])
 @csrf_exempt
 def add_publisher(request):
     form = PublisherForm(data=request.POST)
@@ -102,12 +125,13 @@ def add_publisher(request):
 
         try:
             obj.save()
-            return HttpResponse( json.dumps({ 'status': 'success' }) )
+            return Response(({ 'status': 'success' }) )
         except:
-            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while adding publisher!' }) )
+            return Response(({ 'status': 'error', 'message': 'Error occurred while adding publisher!' }) )
     else:
-        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Form data is not valid!' }) )
+        return Response(({ 'status': 'error', 'message': 'Form data is not valid!' }) )
 
+@api_view(['GET'])
 def get_publisher_books(request):
     if request.GET.get('publisher_id'):
         publisher_id = int(request.GET.get('publisher_id'))
@@ -116,14 +140,16 @@ def get_publisher_books(request):
             data = []
             for book in filtered_books:
                 data.append({ "title": book.title, 'price': book.price, "pub_date": book.pub_date.strftime("%d/%m/%Y"), "publisher": book.publisher.publisher_name })
-            return HttpResponse( json.dumps({ 'books': data }) )
+            return Response(({ 'books': data }) )
         except:
-            return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while querying database!' }) )
+            return Response(({ 'status': 'error', 'message': 'Error occurred while querying database!' }) )
 
+@api_view(['GET'])
 def add_book_view(request):
     publishers = Publisher.objects.all();
     return render(request, 'AddBook.html', { 'publishers': publishers } )
 
+@api_view(['GET'])
 def add_publisher_view(request):
     return render(request, 'AddPublisher.html' )
 
@@ -142,11 +168,11 @@ def update_book(request):
 
     try:
         obj.save()
-        return HttpResponse( json.dumps({ 'status': 'success' }) )
+        return Response(({ 'status': 'success' }) )
     except:
-        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while updating book!' }) )
+        return Response(({ 'status': 'error', 'message': 'Error occurred while updating book!' }) )
 
-
+@api_view(['POST'])
 @csrf_exempt
 def update_publisher(request):
     obj = Publisher.objects.get(pk=request.POST.get('publisher_id'))
@@ -157,36 +183,40 @@ def update_publisher(request):
 
     try:
         obj.save()
-        return HttpResponse( json.dumps({ 'status': 'success' }) )
+        return Response(({ 'status': 'success' }) )
     except:
-        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while updating publisher!' }) )
+        return Response(({ 'status': 'error', 'message': 'Error occurred while updating publisher!' }) )
 
+@api_view(['POST'])
 @csrf_exempt
 def delete_book(request):
     try:
         obj = Book.objects.get(pk=request.POST.get('book_id'))
         obj.delete()
-        return HttpResponse( json.dumps({ 'status': 'success' }) )
+        return Response(({ 'status': 'success' }) )
     except Book.DoesNotExist:
-        return HttpResponse(json.dumps({ "status": "error", "message": "Book does not exist!"}))
+        return Response(({ "status": "error", "message": "Book does not exist!"}))
     except:
-        return HttpResponse( json.dumps({ 'status': 'error', 'message': 'Error occurred while deleting book!' }) )
+        return Response(({ 'status': 'error', 'message': 'Error occurred while deleting book!' }) )
 
+@api_view(['POST'])
 @csrf_exempt
 def delete_publisher(request):
     try:
         obj = Publisher.objects.get(pk=request.POST.get('publisher_id'))
         obj.delete()
-        return HttpResponse(json.dumps({ 'status': 'success' }) )
+        return Response(({ 'status': 'success' }) )
     except Publisher.DoesNotExist:
-        return HttpResponse(json.dumps({ "status": "error", "message": "Publisher does not exist!"}))
+        return Response(({ "status": "error", "message": "Publisher does not exist!"}))
     except:
-        return HttpResponse(json.dumps({ 'status': 'error', 'message': 'Error occurred while deleting publisher!' }) )
+        return Response(({ 'status': 'error', 'message': 'Error occurred while deleting publisher!' }) )
 
+@api_view(['GET'])
 def delete_book_view(request):
     books = Book.objects.all()
     return render(request, 'DeleteBook.html', { 'books': books })
 
+@api_view(['GET'])
 def delete_publisher_view(request):
     publishers = Publisher.objects.all()
     return render(request, 'DeletePublisher.html', { 'publishers': publishers })
